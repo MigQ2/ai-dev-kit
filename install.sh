@@ -47,19 +47,15 @@ USER_MCP_PATH="${DEVKIT_MCP_PATH:-}"
 # Check if scope was explicitly set via env var
 [ -n "${DEVKIT_SCOPE:-}" ] && SCOPE_EXPLICIT=true
 
-OWNER="databricks-solutions"
-REPO="ai-dev-kit"
+OWNER="${DEVKIT_OWNER:-MigQ2}"
+REPO="${DEVKIT_REPO:-ai-dev-kit}"
 
+# Default branch for the user's fork; can be overridden with --branch or DEVKIT_BRANCH
+DEFAULT_BRANCH="${DEVKIT_DEFAULT_BRANCH:-custom-installation}"
 if [ -n "${DEVKIT_BRANCH:-}" ]; then
-  BRANCH="$DEVKIT_BRANCH"
+    BRANCH="$DEVKIT_BRANCH"
 else
-  BRANCH="$(
-    curl -s "https://api.github.com/repos/${OWNER}/${REPO}/releases/latest" \
-    | grep '"tag_name"' \
-    | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/'
-  )"
-  # Fallback to main if we couldn't fetch the latest release
-  [ -z "$BRANCH" ] && BRANCH="main"
+    BRANCH="$DEFAULT_BRANCH"
 fi
 
 # Installation mode defaults
@@ -136,8 +132,8 @@ while [ $# -gt 0 ]; do
 done
 
 # Set configuration URLs after parsing branch argument
-REPO_URL="https://github.com/databricks-solutions/ai-dev-kit.git"
-RAW_URL="https://raw.githubusercontent.com/databricks-solutions/ai-dev-kit/${BRANCH}"
+REPO_URL="https://github.com/${OWNER}/${REPO}.git"
+RAW_URL="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}"
 INSTALL_DIR="${AIDEVKIT_HOME:-$HOME/.ai-dev-kit}"
 REPO_DIR="$INSTALL_DIR/repo"
 VENV_DIR="$INSTALL_DIR/.venv"
